@@ -1,14 +1,17 @@
 # A basic Windows service in C++ (CppWindowsService)
 ## Requires
-- Visual Studio 2008
+- Visual Studio 2008 or later
 ## License
 - MS-LPL
 ## Technologies
 - Windows SDK
+- COM (Component Object Model)
 ## Topics
 - Windows Service
+- COM Component
 ## Updated
-- 03/01/2012
+- 03/01/2012 - original
+- 12/09/2025 - Modified to include COM component support
 ## Description
 
 <h1>SERVICE APPLICATION (<span class="SpellE">CppWindowsService</span>)</h1>
@@ -50,7 +53,19 @@
 <p class="MsoNormal">If the service is successfully removed, you would see this output:</p>
 <p class="MsoNormal"><span style=""><img src="53111-image.png" alt="" width="576" height="299" align="middle">
 </span></p>
-<h2></h2>
+<h2>Using the COM Component</h2>
+<p class="MsoNormal">This service exposes a COM component that can be accessed from external applications. The COM component provides one method:</p>
+<ul>
+<li><strong>GetServerList</strong>: Returns a dummy list of servers in JSON as a BSTR</li>
+</ul>
+<p class="MsoNormal">The COM component is automatically registered in the registry when you install the service using the `-install` command. When the service starts, it registers the COM class object, making it available for external clients to create instances.</p>
+<p class="MsoNormal">To use the COM component from another application:</p>
+<ol>
+<li>Make sure the service is installed and running</li>
+<li>Copy `ServiceComponent.h` to your project and include it
+<li>Use CoCreateInstance with CLSID_ServiceComponent (defined in ServiceComponent.h) to create an instance</li>
+<li>Call the methods through the IServiceComponent interface</li>
+</ol>
 <h2>Using the Code</h2>
 <h3><span style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;; font-weight:normal">Step1. In Visual Studio 2008, add a new Visual C&#43;&#43; / Win32 / Win32 Console Application project named
 <span class="SpellE">CppWindowsService</span>. Unselect the &quot;Precompiled header&quot; option in Application Settings of the Win32 Application Wizard, and delete stdafx.h, stdafx.cpp, targetver.h files after the project is created.

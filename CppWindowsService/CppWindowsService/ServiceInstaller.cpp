@@ -17,7 +17,9 @@
 #pragma region "Includes"
 #include <stdio.h>
 #include <windows.h>
+#include <ole2.h>
 #include "ServiceInstaller.h"
+#include "ServiceComponent.h"
 #pragma endregion
 
 
@@ -91,6 +93,15 @@ void InstallService(PWSTR pszServiceName,
     }
 
     wprintf(L"%s is installed.\n", pszServiceName);
+
+  // Register COM component in registry
+  HRESULT hr = RegisterCOMInRegistry(szPath);
+  if (SUCCEEDED(hr)) {
+    wprintf(L"COM component registered in registry.\n");
+  } else {
+    wprintf(L"Warning: Failed to register COM component in registry: 0x%08lx\n",
+            hr);
+  }
 
 Cleanup:
     // Centralized cleanup for all allocated resources.
@@ -176,6 +187,16 @@ void UninstallService(PWSTR pszServiceName)
     }
 
     wprintf(L"%s is removed.\n", pszServiceName);
+
+  // Unregister COM component from registry
+  HRESULT hr = UnregisterCOMFromRegistry();
+  if (SUCCEEDED(hr)) {
+    wprintf(L"COM component unregistered from registry.\n");
+  } else {
+    wprintf(
+        L"Warning: Failed to unregister COM component from registry: 0x%08lx\n",
+        hr);
+  }
 
 Cleanup:
     // Centralized cleanup for all allocated resources.

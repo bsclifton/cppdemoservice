@@ -1,0 +1,28 @@
+// ServiceComponent.idl : IDL source for ServiceComponent
+//
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+    object,
+    uuid(134A2E61-32DA-4656-BBE1-E9A38C4C9DDE),
+    dual,
+    nonextensible,
+    pointer_default(unique)
+]
+interface IServiceComponent : IDispatch
+{
+    [id(1)] HRESULT GetServerList([out, retval] BSTR* pJSON);
+};
+
+[
+    uuid(FC0D4F9D-18FC-4007-8168-B61DA0D61FA4),
+    version(1.0),
+    helpstring("ServiceComponent 1.0 Type Library")]
+library ServiceComponentLib {
+    importlib("stdole2.tlb");
+
+    interface IServiceComponent;
+};
+

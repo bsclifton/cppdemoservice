@@ -20,6 +20,7 @@
 #pragma region Includes
 #include "SampleService.h"
 #include "ThreadPool.h"
+#include "ServiceComponent.h"
 #pragma endregion
 
 
@@ -95,6 +96,17 @@ void CSampleService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
 //
 void CSampleService::ServiceWorkerThread(void)
 {
+  // Register COM component
+  HRESULT hr = RegisterCOMComponent();
+  if (SUCCEEDED(hr)) {
+    WriteEventLogEntry(L"COM component registered successfully",
+                       EVENTLOG_INFORMATION_TYPE);
+  } else {
+    wchar_t szError[256];
+    swprintf_s(szError, L"Failed to register COM component: 0x%08lx", hr);
+    WriteEventLogEntry(szError, EVENTLOG_ERROR_TYPE);
+  }
+
     // Periodically check if the service is stopping.
     while (!m_fStopping)
     {
@@ -102,6 +114,17 @@ void CSampleService::ServiceWorkerThread(void)
 
         ::Sleep(2000);  // Simulate some lengthy operations.
     }
+
+  // Unregister COM component
+  hr = UnregisterCOMComponent();
+  if (SUCCEEDED(hr)) {
+    WriteEventLogEntry(L"COM component unregistered successfully",
+                       EVENTLOG_INFORMATION_TYPE);
+  } else {
+    wchar_t szError[256];
+    swprintf_s(szError, L"Failed to unregister COM component: 0x%08lx", hr);
+    WriteEventLogEntry(szError, EVENTLOG_ERROR_TYPE);
+  }
 
     // Signal the stopped event.
     SetEvent(m_hStoppedEvent);
